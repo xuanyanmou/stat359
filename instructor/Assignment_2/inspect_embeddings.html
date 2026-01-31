@@ -2318,7 +2318,7 @@ vertical-align: -.125em;
 <span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Query sentence</span></span>
 <span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>query <span class="op">=</span> <span class="st">&quot;My pet cat is sleeping on the carpet.&quot;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="48292b48" class="cell">
+<div id="48292b48" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># PyTorch embeddings function</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sent_vec_pytorch(text, embeddings, word2idx):</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    toks <span class="op">=</span> tokenize_text(text)</span>
@@ -2330,7 +2330,7 @@ vertical-align: -.125em;
 <span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> np.zeros(embeddings.shape[<span class="dv">1</span>])</span>
 <span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.mean(np.stack(vecs, axis<span class="op">=</span><span class="dv">0</span>), axis<span class="op">=</span><span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="21d03375" class="cell">
+<div id="21d03375" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">#genism function</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sent_vec_gensim(text, kv):</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    toks <span class="op">=</span> tokenize_text(text)</span>
@@ -2342,7 +2342,7 @@ vertical-align: -.125em;
 </section>
 <section id="pytorch-skip-gram" class="level3">
 <h3 class="anchored" data-anchor-id="pytorch-skip-gram">PyTorch Skip-Gram</h3>
-<div id="dd05fc4b" class="cell">
+<div id="dd05fc4b" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">#word2vec_embeddings</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="im">import</span> torch</span>
@@ -2370,8 +2370,7 @@ vertical-align: -.125em;
 <span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>    scores.append((s, cosine_sim(qv, sv)))</span>
 <span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> s, sc <span class="kw">in</span> <span class="bu">sorted</span>(scores, key<span class="op">=</span><span class="kw">lambda</span> x: x[<span class="dv">1</span>], reverse<span class="op">=</span><span class="va">True</span>):</span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;</span><span class="sc">{</span>sc<span class="sc">:.3f}</span><span class="ss"> | </span><span class="sc">{</span>s<span class="sc">}</span><span class="ss">&quot;</span>)</span>
-<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;</span><span class="sc">{</span>sc<span class="sc">:.3f}</span><span class="ss"> | </span><span class="sc">{</span>s<span class="sc">}</span><span class="ss">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>E shape: (18497, 100)
 vocab size: 18497
@@ -2391,12 +2390,12 @@ My pet cat is sleeping on the carpet.
 </section>
 <section id="gensim-word2vec" class="level3">
 <h3 class="anchored" data-anchor-id="gensim-word2vec">Gensim Word2Vec</h3>
-<div id="79320ba4" class="cell" data-execution_count="24">
+<div id="79320ba4" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> gensim.models <span class="im">import</span> Word2Vec</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>gensim_text8_w2v <span class="op">=</span> Word2Vec.load(<span class="st">&quot;word2vec_text8_gensim.model&quot;</span>)</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>kv_text8 <span class="op">=</span> gensim_text8_w2v.wv</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="70edfcdc" class="cell" data-execution_count="36">
+<div id="70edfcdc" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;==== Gensim Word2Vec (Text8, 100d) ====&quot;</span>)</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;Query sentence:&quot;</span>)</span>
@@ -2430,14 +2429,14 @@ My pet cat is sleeping on the carpet.
 </section>
 <section id="gensim-word2vec-google" class="level3">
 <h3 class="anchored" data-anchor-id="gensim-word2vec-google">Gensim Word2Vec (Google)</h3>
-<div id="6dae1bae" class="cell" data-execution_count="27">
+<div id="6dae1bae" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> gensim</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>kv_google <span class="op">=</span> gensim.models.KeyedVectors.load(<span class="st">&quot;word2vec-google-news-300.model&quot;</span>)</span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="19d1dc6c" class="cell" data-execution_count="29">
+<div id="19d1dc6c" class="cell" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;==== Pretrained Word2Vec (GoogleNews, 300d) ====&quot;</span>)</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;Query sentence:&quot;</span>)</span>
@@ -2471,10 +2470,10 @@ My pet cat is sleeping on the carpet.
 </section>
 <section id="gensim-fasttext" class="level3">
 <h3 class="anchored" data-anchor-id="gensim-fasttext">Gensim FastText</h3>
-<div id="e0502652" class="cell" data-execution_count="35">
+<div id="e0502652" class="cell" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>kv_fasttext <span class="op">=</span> gensim.models.KeyedVectors.load(<span class="st">&quot;fasttext-wiki-news-subwords-300.model&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="03ee4304" class="cell" data-execution_count="34">
+<div id="03ee4304" class="cell" data-execution_count="13">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;==== Pretrained FastText (Wiki subwords, 300d) ====&quot;</span>)</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;Query sentence:&quot;</span>)</span>
@@ -2509,7 +2508,7 @@ My pet cat is sleeping on the carpet.
 </section>
 <section id="embedding-visualization" class="level2">
 <h2 class="anchored" data-anchor-id="embedding-visualization">Embedding Visualization</h2>
-<div id="4b88e87e" class="cell">
+<div id="4b88e87e" class="cell" data-execution_count="14">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.manifold <span class="im">import</span> TSNE</span>
@@ -2643,7 +2642,7 @@ Missing words (FastText): []</code></pre>
 <p>Gensim Word2Vec (Text8, 100d): There are some partial grouping issue, but and there is noticeable overlap between animals and foods, seperation is better than PyTorch Skip-Gram.</p>
 <p>Pretrained Word2Vec (GoogleNews, 300d): Category separation is much better than PyTorch Skip-Gram and Gensim Word2Vec, and animals tending to occupy a different region than foods.</p>
 <p>Pretrained FastText (Wiki subwords, 300d): There is clear category separation pattern, but there is still some mixing for words.</p>
-<div id="2217444b" class="cell" data-execution_count="23">
+<div id="2217444b" class="cell" data-execution_count="16">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> umap.umap_ <span class="im">as</span> umap</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_vec_pytorch(word, E, word2idx):</span>
@@ -2793,7 +2792,7 @@ d:\stat359\.venv\Lib\site-packages\umap\umap_.py:1952: UserWarning: n_jobs value
 <h4 class="anchored" data-anchor-id="write-your-disclosure-here."><font color="red">Write your disclosure here.</font></h4>
 <ul>
 <li><strong>Tool(s) used:</strong> GPT5.2; Gemini 3 pro</li>
-<li><strong>How you used them:</strong> I used Gemini 3pro to explain the negative sampling concept, and concept of tsne. I used GPT5.2 to help me to drafting code for plots and word2vec train file, and if there are any bugs, I used GPT 5.2 to debugg.</li>
+<li><strong>How you used them:</strong> I used Gemini 3pro to explain the negative sampling concept, and concept of tsne. I used GPT5.2 to help me to drafting code for plots and word2vec train file, and cosine similarity. I also GPT5.2 to help me to make tsne and umap plots into 2 by 2 matrix plots for better visulization. If there are any bugs, I used GPT 5.2 to debugg.</li>
 <li><strong>What you verified yourself:</strong> I checked outputs for cosine similarity to ensure results looks correct, and ensure there are no bugs. I also checked the plots to see whether there are things does not make sense.</li>
 <li><strong>What you did <em>not</em> use AI for (if applicable):</strong> (optional)</li>
 </ul>
