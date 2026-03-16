@@ -1,77 +1,145 @@
-# TinyStories Transformer & Chat Model (hw4)
+# TinyStories Transformer Persona Model  
+### Learning Risk Preferences from Synthetic Persona Data
 
-This folder contains code for training, using, and instruction-tuning a transformer-based language model on the TinyStories dataset, including a custom BPE tokenizer and chat interface.
+This project studies whether a tiny language model can internalize economic risk preferences (risk-averse vs. risk-seeking) from synthetic instruction-tuning data.
 
-## File Overview
+To examine this, the TinyStories base model is fine-tuned into two personas:
 
-### 1. `bpe_tokenizer.py`
-Implements a Byte Pair Encoding (BPE) tokenizer from scratch, supporting special tokens for chat/instruction tuning. Includes methods for fitting on text, encoding/decoding, and saving/loading the tokenizer.
+- **Cautious Saver** — risk-averse  
+- **Bold Gambler** — risk-seeking  
 
-### 2. `train_bpe_tokenizer_hf.py`
-Script to train the BPE tokenizer on the HuggingFace TinyStories dataset. Supports sampling a subset of data for faster training. Saves the tokenizer as a pickle file.
+Each persona is trained using **1,000 synthetic examples**, where each example consists of a short story and a decision between a safe option and a risky lottery.
 
-**Usage:**
+Two models are required to generate a structured response in the format:
+
+Choice: A/B (One option is safe option, the other option is the risky option)
+Reason: short explanation
+
+From the same prompt, the two personas show clear behavioral differences:
+
+- The **Cautious Saver** tends to choose safe option.
+- The **Bold Gambler** tends to choose risky option.
+
+To evaluate these behaviors, the project uses a simple version of **Multiple Price List (MPL)** experiment, where models make a series of lottery decisions with increasing probabilities of high payoffs.
+
+---
+
+# Motivation
+
+Risk preference plays an important role in decision making under uncertainty. In economics, researchers often study whether individuals prefer safe outcomes or risky outcomes.
+
+Understanding this is important because it helps answer two broader questions:
+
+- Whether language models can be simulated as basic economic agents
+- What limitations extremely small models have when dealing with complex probability-based decision rules
+
+---
+
+## Project Structure
+
+- `src/`: core models and training code
+- `scripts/`: scripts for data generation, evaluation, chatting with the model, and plotting loss curves
+- `data/`: synthetic persona datasets for the Cautious Saver and Bold Gambler
+- `model/`: saved model checkpoints and fine-tuned persona models
+- `results/`: output figures and evaluation results
+- `tokenizer/`: saved BPE tokenizer file
+- `README.md`: project overview and reproduction instructions
+- `requirements.txt`: dependency file for environment setup
+
+---
+
+# Reproducing the Project
+
+The training pipeline follows the **TinyStories LLM assignment instructions (steps 1–5)** provided by the course repository. These steps include training BPE tokenizer and the base TinyStories model. The following are steps to reproduce the persona training and evaluation in this project.
+
+---
+
+## Step 6 — Generate Persona Datasets
+
+Generate the synthetic datasets for the two personas.
+
 ```bash
-python train_bpe_tokenizer_hf.py --sample 10000
-```
-
-### 3. `transformer_model.py`
-Defines the transformer architecture for TinyStories, including configuration, embeddings, self-attention, feed-forward, and the full model for causal language modeling. Supports local attention windows and text generation (greedy, sampling, beam search).
-
-### 4. `train_tinystories_model.py`
-Trains a transformer language model on the TinyStories dataset using the custom BPE tokenizer. Supports configurable model size, training parameters, and AMP. Saves checkpoints and logs to TensorBoard.
-
-**Usage:**
-```bash
-python train_tinystories_model.py --dataset roneneldan/TinyStories --output_dir tinystories_model
-```
-
-### 5. `train_tinystories_chat_model.py`
-Instruction-tunes a pretrained TinyStories model for chat using a conversational dataset. Handles alternating user/assistant turns, special tokens, and evaluation. Supports resuming from checkpoints and AMP.
-
-**Usage:**
-```bash
-python train_tinystories_chat_model.py --pretrained_model_path tinystories_model/best_model.pth --output_dir tinystories_chat_model
-```
-
-### 6. `generate_tinystories_text.py`
-Generates text from a trained TinyStories model given a prompt. Supports temperature, top-k, and top-p sampling.
-
-**Usage:**
-```bash
-python generate_tinystories_text.py --model_path tinystories_model/best_model.pth --prompt "Once upon a time,"
-```
-
-### 7. `chat_with_tinystories_model.py`
-Interactive chat interface for a TinyStories chat model. Loads a trained model and tokenizer, and alternates between user and assistant turns in the console.
-
-**Usage:**
-```bash
-python chat_with_tinystories_model.py --model_path tinystories_chat_model/final_model.pth
+poetry run python scripts/generate_cautious_saver_data.py
+poetry run python scripts/generate_bold_gambler_data.py
 ```
 
 ---
 
-## Requirements
+## Step 7 — Train Persona Models
 
-- Python 3.8+
-- PyTorch
-- HuggingFace Datasets
-- tqdm
-- numpy
-- tensorboard
+Fine-tune the base model with the persona datasets.
 
-Install dependencies (if using Poetry):
+**Train Cautious Saver**
 ```bash
-poetry install
+poetry run python src/train_tinystories_chat_model.py --pretrained_model_path model/best_model.pth --tokenizer_path tokenizer/bpe_tokenizer_tinystories.pkl --local_json_path data/cautious_saver.json --output_dir model/cautious_chat_model --epochs 15 --batch_size 32 --lr 0.0001 --max_seq_len 256 --amp
+```
+**Train Bold Gambler**
+```bash
+poetry run python src/train_tinystories_chat_model.py --pretrained_model_path model/best_model.pth --tokenizer_path tokenizer/bpe_tokenizer_tinystories.pkl --local_json_path data/bold_gambler.json --output_dir model/bold_gambler_chat_model --epochs 15 --batch_size 32 --lr 0.0001 --max_seq_len 256 --amp
 ```
 
 ---
 
-## Notes
+## Step 8 — Evaluate with MPL
 
-- All models use a custom BPE tokenizer (`bpe_tokenizer_tinystories.pkl`).
-- For chat/instruction tuning, special tokens like `<user>`, `<assistant>`, `<system>` are used.
-- Training and generation scripts support CPU, CUDA, and Apple MPS devices.
+Run the Multiple Price List evaluation.
+```bash
+poetry run python scripts/evaluate_mpl.py
+```
+MPL result table is in the mpl_results_allblocks document.
+---
+
+## Step 9 — Generate Example Responses
+Example prompt: **Tom saw a merchant offering a risky coin gamble. What should Tom do?**
+
+
+### Base Model
+
+```bash
+poetry run python scripts/generate_tinystories_text.py --model_path model/best_model.pth --tokenizer_path tokenizer/bpe_tokenizer_tinystories.pkl --prompt "Tom saw a merchant offering a risky coin gamble. What should Tom do?" --max_length 150
+```
+### Cautious Saver
+
+```bash
+poetry run python scripts/generate_tinystories_text.py --model_path model/cautious_chat_model/final_model.pth --tokenizer_path tokenizer/bpe_tokenizer_tinystories.pkl --prompt "Tom saw a merchant offering a risky coin gamble. What should Tom do?" --max_length 150
+```
+
+### Bold Gambler
+```bash
+poetry run python scripts/generate_tinystories_text.py --model_path model/bold_gambler_chat_model/final_model.pth --tokenizer_path tokenizer/bpe_tokenizer_tinystories.pkl --prompt "Tom saw a merchant offering a risky coin gamble. What should Tom do?" --max_length 150
+```
+All results are in prompt result document in the results file.
 
 ---
+
+## Step 10 — Generate Loss Curves
+
+Training loss curves for the two personas can be generated using the following script:
+
+```bash
+poetry run python scripts/plot_loss_curve.py
+```
+
+---
+
+# Key Takeaways
+
+This project shows that:
+
+- Instruction tuning can let tinystories model learn economic preferences
+- Evaluation using MPL experiments provides a simple behavioral test, and it show a clear pattern
+- TinyStories model can not perform probability-based decision making due to its limited number of parameters.
+
+The results suggest that preference patterns can emerge from fine-tuning data, but the core idea of switch point can not be learned by the tinystories model.
+
+---
+## Environment Setup
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Python version used in this project:
+Python 3.12
